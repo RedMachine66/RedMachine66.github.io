@@ -1,3 +1,4 @@
 # RedMachine66.github.io
 School project
-virke dette?
+
+- [Min Hjemmeside](Intro hjemmeside, profil, kage/)
