@@ -1,2 +1,2 @@
-# SuperCoolWebsite.github.io
+# RedMachine66.github.io
 School project
