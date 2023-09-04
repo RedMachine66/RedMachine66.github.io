@@ -12,17 +12,27 @@ body {
     padding: 0%;
 }
 
-h1 {
-    font-size: 60px;
+
+.TopFixedHeader {
+    background-color: blueviolet;
+    color: white;
+    font-family: OCR A Std, monospace;
+    padding-left: 30px;
+    padding-right: 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
 }
 
 .myHeader {
     background-color: #f48cf4;
     color: white;
     font-family: OCR A Std, monospace;
+    font-size: 60px;
     padding: 30px;
-    margin-left: 40px;
-    margin-right: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
     text-align: center;
     border: 5px outset deeppink;
 }
@@ -50,8 +60,9 @@ h1 {
 }
 
 .wrapper {
-    margin-right: 50;
-    margin-left: 50;
+    margin-top: 100px;
+    margin-right: 50px;
+    margin-left: 50px;
 }
 
 
