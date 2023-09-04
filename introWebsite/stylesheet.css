@@ -6,5 +6,64 @@
 #544177 purple */
 
 body {
-    background-color: #544177
+    background-color: #544177;
+    color: white;
+    font-family: OCR A Std, monospace;
+    padding: 0%;
+}
+
+h1 {
+    font-size: 60px;
+}
+
+.myHeader {
+    background-color: #f48cf4;
+    color: white;
+    font-family: OCR A Std, monospace;
+    padding: 30px;
+    margin-left: 40px;
+    margin-right: 40px;
+    text-align: center;
+    border: 5px outset deeppink;
+}
+
+.mySection1 {
+    background-color: DeepPink;
+    color: white;
+    font-family: OCR A Std, monospace;
+    padding: 10px;
+    margin-left: 40px;
+    margin-right: 40px;
+    text-align: left;
+    border: 5px outset blueviolet;
+}
+
+.mySection2 {
+    background-color: Fuchsia;
+    color: white;
+    font-family: OCR A Std, monospace;
+    padding: 6px;
+    margin-left: 40px;
+    margin-right: 40px;
+    text-align: left;
+    border: 5px outset blueviolet;
+}
+
+.wrapper {
+    margin-right: 50;
+    margin-left: 50;
+}
+
+
+
+a:link {
+    color: white;
+}
+
+a:visited {
+    color: #00ff9d;
+}
+
+a:hover {
+    color: #00aeff;
 }
