@@ -25,8 +25,6 @@ body {
     font-family: OCR A Std, monospace;
     font-size: 60px;
     padding: 30px;
-    margin-left: 20px;
-    margin-right: 20px;
     text-align: center;
     border: 5px outset deeppink;
 }
@@ -36,8 +34,6 @@ body {
     color: white;
     font-family: OCR A Std, monospace;
     padding: 10px;
-    margin-left: 40px;
-    margin-right: 40px;
     text-align: left;
     border: 5px outset blueviolet;
 }
@@ -47,8 +43,6 @@ body {
     color: white;
     font-family: OCR A Std, monospace;
     padding: 6px;
-    margin-left: 40px;
-    margin-right: 40px;
     text-align: left;
     border: 5px outset blueviolet;
 }
