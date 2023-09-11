@@ -6,25 +6,43 @@ body {
     padding: 0%;
 }
 
+.mainContent {
+    padding-right: 2%;
+    padding-left: 2%;
+}
 
 .TopFixedHeader {
     background-color: blueviolet;
     color: white;
     font-family: OCR A Std, monospace;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 7%;
+    padding-right: 7%;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
 }
 
-.myHeader {
-    background-color: #f48cf4;
+.footer {
+    background-color: blueviolet;
     color: white;
     font-family: OCR A Std, monospace;
-    font-size: 60px;
-    padding: 30px;
+    padding-left: 7%;
+    padding-right: 7%; 
+    padding-top: 3px;
+    padding-bottom: 3px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.myHeader {
+    background-color: #ff65ff;
+    color: white;
+    font-family: OCR A Std, monospace;
+    font-size: 45px;
+    padding: 25px;
     text-align: center;
     border: 5px outset deeppink;
 }
@@ -34,6 +52,7 @@ body {
     color: white;
     font-family: OCR A Std, monospace;
     padding: 10px;
+    padding-left: 20px;
     text-align: left;
     border: 5px outset blueviolet;
 }
@@ -43,17 +62,70 @@ body {
     color: white;
     font-family: OCR A Std, monospace;
     padding: 6px;
+    padding-left: 18px;
     text-align: left;
     border: 5px outset blueviolet;
 }
 
 .wrapper {
     margin-top: 100px;
-    margin-right: 50px;
-    margin-left: 50px;
+    margin-bottom: 80px;
+    margin-right: 7%;
+    margin-left: 7%;
 }
 
 
+.gridpara {grid-area: gridpara;
+    background-color: rgb(255, 0, 200);
+    color:white;
+    font-family: OCR A Std, monospace;
+    font-size: 18px;
+    padding: 6px;
+    padding-left: 18px;
+    margin: 5px;
+    text-align: left;
+    border: 5px outset blueviolet;
+}
+.gridpara2 {grid-area: gridpara2;
+    background-color: rgb(255, 0, 200);
+    color:white;
+    font-family: OCR A Std, monospace;
+    font-size: 18px;
+    padding: 6px;
+    padding-left: 18px;
+    margin: 5px;
+    text-align: left;
+    border: 5px outset blueviolet;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-areas: 
+    'gridpara gridpara2';
+    grid-gap: 10px;
+}
+
+@media screen and (min-width:60em) {
+    .wrapper {
+        margin-top: 110px;
+        margin-right: 12%;
+        margin-left: 12%;
+    }
+    .myHeader {
+        font-size: 60px;
+        padding: 30px;
+    }
+    .TopFixedHeader {
+        padding-left: 12%;
+        padding-right: 12%;
+    }
+    .footer {
+        padding-left: 12%;
+        padding-right: 12%;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
 
 a:link {
     color: white;
