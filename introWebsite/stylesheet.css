@@ -37,6 +37,17 @@ body {
     width: 100%;
 }
 
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.imageAlignPara {
+    margin-left: 10%;
+}
+
 .myHeader {
     background-color: #ff65ff;
     color: white;
