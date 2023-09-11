@@ -43,9 +43,9 @@ animation-duration: 4s;
 
 @keyframes footer {
     0%   {color: white;}
-    25%  {color: #00ff9d;}
-    50%  {color: black;}
-    95% {color: #00aeff;}
+    28%  {color: #00ff9d;}
+    40%  {color: black;}
+    65% {color: #00aeff;}
     100% {color: white;}
 }
 
