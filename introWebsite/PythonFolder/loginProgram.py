@@ -21,14 +21,12 @@ while True:
                 if passwordInput!=Password:
                     i=i-1
                     print('Wrong password')
-                    print('You have ' + str(i) +' attempts left')
+                    print('Attempts remaining: ' + str(i))
                     continue
                 else:
                     break
     break
 print('Access Granted')
-
-
 
 
 
