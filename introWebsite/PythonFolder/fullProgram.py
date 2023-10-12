@@ -1,4 +1,5 @@
-import time, sys
+import time, sys, cowsay, pyfiglet
+from termcolor import colored
 
 Username='Magnus'
 Password='1234'
@@ -7,14 +8,17 @@ usernameInput=''
 passwordInput=''
 userInput=''
 
-print('Please enter your username')
+banner = pyfiglet.Figlet(font='slant')
+print(banner.renderText('Dash Corp'))
+
+print(colored('Please enter your username', 'green'))
 while usernameInput != Username:
     usernameInput=input()
     if usernameInput != Username:
         print('Account not found, please try again')
 
 print('Account found')
-print('Enter password')
+print(colored('Enter password', 'green'))
 
 while passwordInput!=Password:
     if i==0:
@@ -24,22 +28,26 @@ while passwordInput!=Password:
         passwordInput=input()
         if passwordInput!=Password:
             i=i-1
-            print('Wrong password')
+            print(colored('Wrong password', 'red'))
             print('Attempts remaining: ' + str(i))
 
-print('Access Granted')
+print(colored('Access Granted', 'green'))
 print('___________________')
+time.sleep(0.2)
+banner = pyfiglet.Figlet(font='slant')
+print(banner.renderText('Welcome'))
 time.sleep(0.2)
 print('You now have access to your persoanl dashboard')
 time.sleep(0.5)
 print('Do you want to convert DKK to Euro, or would you like to calculate your postal fee?')
-print('___________________')
 time.sleep(0.5)
 
 while userInput != 'x':
-    print('Enter "c" to convert DKK to Euro')
-    print('Enter "p" to calculate postal fee')
-    print('Enter "x" to log out and exit')
+    print('___________________')
+    print('')
+    print('Enter ' + colored('"c"', 'green') + ' to convert DKK to Euro')
+    print('Enter ' + colored('"p"', 'green') + ' to calculate postal fee')
+    print('Enter ' + colored('"x"', 'green') + ' to log out and exit')
     print('___________________')
 
     userInput=input()
@@ -53,7 +61,7 @@ while userInput != 'x':
                 try:
                     DKKInput = float(DKKInput)
                 except:
-                    print ('Enter a valid number')
+                    print (colored('Enter a valid number', 'yellow'))
                     continue
                 break 
             print('exchange is subject to 2% fee, minimum 0.5 euro')
@@ -68,7 +76,7 @@ while userInput != 'x':
             print('___________________')
             print('You will receive '+str(int(finalEuroAmount))+' euro and you will pay '+str(float(fee))+' euro in fees.')
             time.sleep(0.2)
-            print('Thank your for your business.')
+            print(colored('Thank your for your business.', 'blue'))
             print('___________________')
             time.sleep(0.5)
             print('If you want to convert again tap enter')
@@ -94,7 +102,7 @@ while userInput != 'x':
                 try:
                     weight = float(weight)
                 except:
-                    print ('Indtast et tal')
+                    print (colored('Enter a valid number', 'yellow'))
                     continue
                 break 
             time.sleep(0.2)
@@ -109,14 +117,15 @@ while userInput != 'x':
 
             print('___________________')
             time.sleep(0.5)
-            print('Thank you for your business!')
+            print(colored('Thank your for your business.', 'blue'))
             print('___________________')
             time.sleep(0.3)
             print('If you want to calculate postal shipping again tap enter')
             print('If you want to return to dashboard enter "n"')
             userInput=input()
 
-print('You have been logged out')
+print('___________________')
+print(colored('You have been logged out', 'yellow'))
 
 
 
