@@ -1,35 +1,45 @@
-import time, sys, cowsay, pyfiglet
+import time, sys, cowsay, pyfiglet, json
 from termcolor import colored
 
-Username='Magnus'
-Password='1234'
-i=3
-usernameInput=''
-passwordInput=''
 userInput=''
+
+# Database, Account List:
+AL = {
+    'Magnus':'1234',
+    'Test':'4321',
+    'Rasmus':'unicorn',
+    'incognito':'password'
+}
 
 banner = pyfiglet.Figlet(font='slant')
 print(banner.renderText('Dash Corp'))
 
 print(colored('Please enter your username', 'green'))
-while usernameInput != Username:
+while True:
+    usernameInput=''
     usernameInput=input()
-    if usernameInput != Username:
+    if usernameInput not in AL:
         print('Account not found, please try again')
+        continue
+    break
 
 print('Account found')
 print(colored('Enter password', 'green'))
 
-while passwordInput!=Password:
+i=3
+while True:
+    passwordInput=''
     if i==0:
-        print('Your account has been locked')
+        print(colored('Your account has been locked', 'red'))
         sys.exit()
     else:
         passwordInput=input()
-        if passwordInput!=Password:
+        if passwordInput != AL[usernameInput]:
             i=i-1
-            print(colored('Wrong password', 'red'))
+            print(colored('Access Denied', 'red'))
             print('Attempts remaining: ' + str(i))
+        else:
+            break
 
 print(colored('Access Granted', 'green'))
 print('___________________')
@@ -37,7 +47,7 @@ time.sleep(0.2)
 banner = pyfiglet.Figlet(font='slant')
 print(banner.renderText('Welcome'))
 time.sleep(0.2)
-print('You now have access to your persoanl dashboard')
+print(colored(usernameInput,'blue') + ', you now have access to your persoanl dashboard')
 time.sleep(0.5)
 print('Do you want to convert DKK to Euro, or would you like to calculate your postal fee?')
 time.sleep(0.5)

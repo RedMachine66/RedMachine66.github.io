@@ -1,30 +1,37 @@
 import time, sys
 
-Username='Magnus'
-Password='1234'
 i=3
 usernameInput=''
 passwordInput=''
 
+AL = {
+    'Magnus':'1234',
+    'Test':'4321'
+}
+
 print('Please enter your username')
-while usernameInput != Username:
+while True:
     usernameInput=input()
-    if usernameInput != Username:
+    if usernameInput not in AL:
         print('Account not found, please try again')
+        continue
+    break
 
 print('Account found')
 print('Enter password')
 
-while passwordInput!=Password:
+while True:
     if i==0:
         print('Your account has been locked')
         sys.exit()
     else:
         passwordInput=input()
-        if passwordInput!=Password:
+        if passwordInput != AL[usernameInput]:
             i=i-1
             print('Wrong password')
             print('Attempts remaining: ' + str(i))
+        else:
+            break
 
 print('Access Granted')
 

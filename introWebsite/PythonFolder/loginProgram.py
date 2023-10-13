@@ -4,6 +4,7 @@ Username='Magnus'
 Password='1234'
 i=3
 
+
 print('Please enter your username')
 while True:
     usernameInput=input()
