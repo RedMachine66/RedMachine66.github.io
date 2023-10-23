@@ -1,18 +1,21 @@
-import time, sys
+import time, sys, json
 
 i=3
 usernameInput=''
 passwordInput=''
 
-AL = {
-    'Magnus':'1234',
-    'Test':'4321'
-}
+accountDatabase = 'accountDatabase.json'
+
+try:
+    with open(accountDatabase, 'r') as accountFile:
+        accountData = json.load(accountFile)
+except (FileNotFoundError, json.JSONDecodeError):
+    accountData = {}
 
 print('Please enter your username')
 while True:
     usernameInput=input()
-    if usernameInput not in AL:
+    if usernameInput not in accountData:
         print('Account not found, please try again')
         continue
     break
@@ -26,7 +29,7 @@ while True:
         sys.exit()
     else:
         passwordInput=input()
-        if passwordInput != AL[usernameInput]:
+        if passwordInput != accountData[usernameInput]:
             i=i-1
             print('Wrong password')
             print('Attempts remaining: ' + str(i))
