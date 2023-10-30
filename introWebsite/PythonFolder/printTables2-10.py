@@ -9,4 +9,3 @@ while startRange != 11:
     stopRange=stopRange+10
     stepRange=stepRange+1
     print()
-
