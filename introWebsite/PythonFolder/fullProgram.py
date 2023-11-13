@@ -1,4 +1,4 @@
-import time, sys, cowsay, pyfiglet, json
+import time, sys, cowsay, pyfiglet, json, random
 from termcolor import colored
 
 userInput=''
@@ -57,6 +57,7 @@ while userInput != 'x':
     print('')
     print('Enter ' + colored('"c"', 'green') + ' to convert DKK to Euro')
     print('Enter ' + colored('"p"', 'green') + ' to calculate postal fee')
+    print('Enter ' + colored('"g"', 'green') + ' to play a game')
     print('Enter ' + colored('"x"', 'green') + ' to log out and exit')
     print('___________________')
 
@@ -131,6 +132,40 @@ while userInput != 'x':
             print('___________________')
             time.sleep(0.3)
             print('If you want to calculate postal shipping again tap enter')
+            print('If you want to return to dashboard enter "n"')
+            userInput=input()
+
+    elif userInput=='g':
+        while userInput != 'n':
+            def numberGuess(num):
+                if userInput > magicNumber:
+                    return "No, it's lower"
+                elif userInput < magicNumber:
+                    return "No, it's higher"
+                elif userInput == magicNumber:
+                    return 'Damn it, you got it'
+
+            magicNumber=random.randint(1,20)
+
+            print("Guess which number between 1 and 20 I'm thinking about")
+
+            i=0
+            userInput=None
+
+            while userInput != magicNumber and i != 3:
+                userInput=int(input())
+                print(numberGuess(userInput))
+                i += 1
+
+            print(f"you used {i} geusses")
+
+            if userInput == magicNumber:
+                print('Good work')
+            elif i == 3:
+                print("Better luck next time. You've used all your guesses")
+            print('___________________')
+            time.sleep(0.3)
+            print('If you want to play again tap enter')
             print('If you want to return to dashboard enter "n"')
             userInput=input()
 

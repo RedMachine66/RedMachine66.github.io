@@ -12,6 +12,6 @@ print('Write a number')
 number=None
 numOut=int(input())
 
-while number != 1:
+while numOut != 1:
     numOut=collatz(numOut)
     print(numOut)
