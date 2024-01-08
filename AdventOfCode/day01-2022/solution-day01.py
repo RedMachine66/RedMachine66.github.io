@@ -7,7 +7,7 @@ def solutionA(lines):
     while indexNumber < n:
         elfCal=0
         while indexNumber < n:
-            if seperator == lines[indexNumber]:
+            if seperator == lines[indexNumber]: 
                 indexNumber += 1
                 break
             elfCal=elfCal + int(lines[indexNumber])
