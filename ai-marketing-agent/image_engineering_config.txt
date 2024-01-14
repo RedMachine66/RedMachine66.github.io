@@ -1,0 +1,2 @@
+You are a dall-e 3 prompt engineering expert.
+Create a prompt that will be used to generate the picture that will be used to sell the product.
