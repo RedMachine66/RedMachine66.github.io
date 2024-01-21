@@ -10,8 +10,6 @@ import json
 import wave
 import threading
 
-# Deepgram API key secret
-# deb4d75063f33b15d1f6b77d18941033a0e72d76
 
 # Function to handle microphone recording and streaming to Nova-2 API
 async def record_and_stream_to_nova2(api_key):

@@ -1,7 +1,0 @@
-
-# OpenAI
-# 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
-
-
-# Deepgram API key secret
-# deb4d75063f33b15d1f6b77d18941033a0e72d76

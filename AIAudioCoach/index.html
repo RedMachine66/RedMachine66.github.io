@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+</head>
+<body>
+
+<button id="startRecording">Start Recording</button>
+<button id="stopRecording">Stop Recording</button>
+
+<div id="transcript">Transcript will appear here...</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob;
+
+        const startRecordingButton = document.getElementById('startRecording');
+        const stopRecordingButton = document.getElementById('stopRecording');
+        const transcriptDisplay = document.getElementById('transcript');
+
+        startRecordingButton.addEventListener('click', startRecording);
+        stopRecordingButton.addEventListener('click', stopRecording);
+
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.start();
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.onstop = async () => {
+                    audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    await sendFileToServer(audioBlob);
+                };
+            }
+        }
+
+        async function sendFileToServer(blob) {
+            const formData = new FormData();
+            formData.append('file', blob, 'recording.wav');
+
+            try {
+                const response = await fetch('http://localhost:8000/uploadfile/', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                console.log("Server response:", result);
+
+                displayTranscript(result.response);
+            } catch (error) {
+                console.error('Error sending file to server:', error);
+            }
+        }
+
+        function displayTranscript(data) {
+            console.log("Transcript data:", data);
+            transcriptDisplay.textContent = data.transcript || 'No transcript available';
+        }
+    });
+</script>
+
+</body>
+</html>

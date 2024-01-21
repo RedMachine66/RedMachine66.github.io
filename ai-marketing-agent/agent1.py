@@ -1,11 +1,13 @@
 from copy_agent_gpt_35_turbo_api import generate_response  # Replace with the actual name of your script
 from image_agent_dalle_3_api import generate_and_save_image
+from radio_ad_voiceover_agent_11labs import convert_text_to_speech
 import os, datetime
 
 headline_copy_config = 'headline_copy_config.txt'
 primary_copy_config = 'primary_copy_config.txt'
 image_engineering_config = 'image_engineering_config.txt'
 campaign_info = 'campaign_info.txt'
+voiceover_config = 'gpt_voice_config.txt'
 
 # Create folder for marketing content with timestamp in the name.
 def create_unique_folder(base_path="."):
@@ -50,3 +52,12 @@ else:
     print("Error generating output file.")
 
 generate_and_save_image('image_prompts/'+image_prompt, folder_path)
+
+# Generate voiceover
+voice_prompt = generate_response(voiceover_config, campaign_info, 'voice_prompt')
+if voice_prompt:
+    print(f"Output file generated: {voice_prompt}")
+else:
+    print("Error generating output file.")
+
+convert_text_to_speech('voice_prompt/'+voice_prompt, folder_path)

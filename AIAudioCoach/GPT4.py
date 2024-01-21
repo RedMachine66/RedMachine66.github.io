@@ -4,7 +4,7 @@ import os
 
 
 # Replace 'YOUR_API_KEY' with your OpenAI API key
-openai.api_key = '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'
+openai.api_key = 'YOUR_API_KEY'
 
 def start_or_continue_conversation(ongoing):
     if ongoing:
