@@ -10,6 +10,9 @@ import json
 import wave
 import threading
 
+def read_file(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
 
 # Function to handle microphone recording and streaming to Nova-2 API
 async def record_and_stream_to_nova2(api_key):
@@ -59,7 +62,7 @@ async def record_and_stream_to_nova2(api_key):
     return transcripts  # Return all the collected transcripts
 
 # Replace 'YOUR_DEEPGRAM_API_KEY' with your actual Nova-2 API Key
-nova2_api_key = eb4d75063f33b15d1f6b77d18941033a0e72d76
+nova2_api_key = read_file('deepgram_api.key')
 
 # Call the function to start recording and streaming to Nova-2
 transcripts = asyncio.run(record_and_stream_to_nova2(nova2_api_key))
