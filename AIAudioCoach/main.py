@@ -11,6 +11,8 @@ import requests
 from playsound import playsound
 import playsound
 from openai import OpenAI, OpenAIError
+import shutil
+from datetime import datetime
 
 
 def read_file(file_path, mode='rb'):
@@ -24,13 +26,13 @@ def read_file(file_path, mode='rb'):
 
 
 # Transcription STT function
-async def transcribe_audio_file(audio_file_path, transcript_save_path, api_key_file='deepgram_api.key'):
+async def transcribe_audio_file(audio_file_path, chat_history_path='chat_history.json', api_key_file='deepgram_api.key'):
     try:
         print(f"Reading API key from {api_key_file}...")
-        api_key = read_file(api_key_file, 'r')
-        if api_key is None:
-            raise ValueError("API key file could not be read.")
-        api_key = api_key.strip()
+        with open(api_key_file, 'r') as file:
+            api_key = file.read().strip()
+        if not api_key:
+            raise ValueError("API key is empty.")
 
         # Initialize the Deepgram SDK
         print("Initializing Deepgram SDK...")
@@ -38,21 +40,33 @@ async def transcribe_audio_file(audio_file_path, transcript_save_path, api_key_f
 
         # Read the audio file
         print(f"Reading audio file from {audio_file_path}...")
-        audio_data = read_file(audio_file_path)
-        if audio_data is None:
-            raise ValueError("Audio file could not be read.")
+        with open(audio_file_path, 'rb') as file:
+            audio_data = file.read()
+        if not audio_data:
+            raise ValueError("Audio file is empty.")
 
         # Send the audio file to Deepgram for transcription
         print("Transcribing audio file...")
-        response = await dg_client.transcription.prerecorded({'buffer': audio_data, 'mimetype': 'audio/wav'}, {'punctuate': True})
+        response = await dg_client.transcription.prerecorded(
+            {'buffer': audio_data, 'mimetype': 'audio/wav'},
+            {'punctuate': True}
+        )
 
         # Extract the transcript
         transcript = response['results']['channels'][0]['alternatives'][0]['transcript']
 
-        # Save the transcript to a file
-        print(f"Saving transcript to {transcript_save_path}...")
-        with open('user_answer.txt', 'w') as file:
-            file.write(transcript)
+        # Read existing chat history
+        print(f"Reading chat history from {chat_history_path}...")
+        with open(chat_history_path, 'r') as file:
+            chat_history = json.load(file)
+
+        # Append transcript as a new user message
+        chat_history.append({"role": "user", "content": transcript})
+
+        # Save the updated chat history
+        print(f"Appending transcript to chat history and saving to {chat_history_path}...")
+        with open(chat_history_path, 'w') as file:
+            json.dump(chat_history, file)
 
         print("Transcription completed successfully.")
         return transcript
@@ -60,8 +74,10 @@ async def transcribe_audio_file(audio_file_path, transcript_save_path, api_key_f
     except Exception as e:
         print(f"An error occurred during transcription: {str(e)}")
 
+
+
 # # Example usage
-# asyncio.run(transcribe_audio_file('path/to/your/audio/file.wav', 'path/to/save/transcript.txt'))
+# asyncio.run(transcribe_audio_file('path/to/your/audio/file.wav', 'path/to/chat/history/file.json'))
 
 
 
@@ -235,10 +251,21 @@ def play_audio(file_path):
 
 
 #GPT Function
+def convert_to_chat_history(history):
+    """
+    Convert the chat history to the required format if necessary.
+    """
+    if not isinstance(history, list):
+        raise TypeError("Chat history must be a list.")
+    for msg in history:
+        if not isinstance(msg, dict) or "role" not in msg or "content" not in msg:
+            raise ValueError("Each message in the chat history must be a dictionary with 'role' and 'content' keys.")
+    return history
+
 def call_openai_api(history_file_location, gpt_output_location, new_history_location, 
                     api_key_file='openai_api.key', 
                     default_gpt_output='gpt_output.txt',
-                    default_new_history='chat_history.txt'):
+                    default_new_history='chat_history.json'):
 
     try:
         # Read API key
@@ -258,11 +285,15 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
         # Read chat history
         with open(history_file_to_use, 'r') as file:
             history = json.load(file)
+            history = convert_to_chat_history(history)  # Convert to required format
     except IOError:
         print(f"Error: Failed to read the chat history from {history_file_to_use}.")
         return
     except json.JSONDecodeError:
         print(f"Error: Chat history file {history_file_to_use} is not a valid JSON.")
+        return
+    except (TypeError, ValueError) as e:
+        print(f"Error: Invalid chat history format - {e}")
         return
 
     try:
@@ -302,3 +333,45 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
 
 # Example usage
 call_openai_api('path/to/chat_history.json', 'gpt_output.txt', 'chat_history.txt')
+
+
+
+# Coach termination function
+def terminate_coach():
+    try:
+        # Create folder with name starting with date and time
+        folder_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_conversation_history"
+        os.mkdir(folder_name)
+        print(f"Created folder: {folder_name}")
+
+        # Move chat_history.json to the new folder
+        shutil.move("chat_history.json", os.path.join(folder_name, "chat_history.json"))
+        print("Moved chat_history.json to folder.")
+
+        # Delete voice_output.mp3 if exists
+        if os.path.exists("voice_output.mp3"):
+            os.remove("voice_output.mp3")
+            print("Deleted voice_output.mp3")
+
+        # Delete gpt_output.txt if exists
+        if os.path.exists("gpt_output.txt"):
+            os.remove("gpt_output.txt")
+            print("Deleted gpt_output.txt")
+
+        # Delete user_answer.wav if exists
+        if os.path.exists("user_answer.wav"):
+            os.remove("user_answer.wav")
+            print("Deleted user_answer.wav")
+
+        # Delete user_answer.txt if exists
+        if os.path.exists("user_answer.txt"):
+            os.remove("user_answer.txt")
+            print("Deleted user_answer.txt")
+
+        print("All tasks completed.")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+
+# Call the function
+terminate_coach()
