@@ -11,7 +11,9 @@ import requests
 import openai
 import shutil
 from datetime import datetime
-from pydub import AudioSegment
+import soundfile
+from tempfile import NamedTemporaryFile
+
 
 
 def read_file(file_path, mode='rb'):
@@ -216,17 +218,16 @@ def convert_text_to_speech(input_file='gpt_output.txt', output_folder = os.getcw
 # convert_text_to_speech('input.txt', 'output')
 
 
-
 # Speaker function
 def convert_to_wav(file_path):
     # Load audio file
-    sound = AudioSegment.from_file(file_path)
+    data, samplerate = soundfile.read(file_path)
 
     # Define output file path
     output_path = os.path.splitext(file_path)[0] + ".wav"
 
-    # Export as WAV
-    sound.export(output_path, format="wav")
+    # Write data to WAV file
+    soundfile.write(output_path, data, samplerate, subtype='PCM_16')
 
     return output_path
 
@@ -286,7 +287,8 @@ def play_audio(file_path='voice_output.mp3'):
 
 
 
-#GPT Function
+
+#GPT Function v2
 def convert_to_chat_history(history):
     """
     Convert the chat history to the required format if necessary.
@@ -298,11 +300,8 @@ def convert_to_chat_history(history):
             raise ValueError("Each message in the chat history must be a dictionary with 'role' and 'content' keys.")
     return history
 
-def call_openai_api(history_file_location, gpt_output_location, new_history_location, 
-                    api_key_file='openai_api.key', 
-                    default_gpt_output='gpt_output.txt',
-                    default_new_history='chat_history.json'):
-
+def call_openai_api(history_file_location='chat_history.json', gpt_output_location='gpt_output.txt', new_history_location='chat_history.json', 
+                    api_key_file='openai_api.key'):
     try:
         # Read API key
         with open(api_key_file, 'r') as file:
@@ -312,16 +311,20 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
         return
 
     # Initialize OpenAI client
-    client = OpenAI(api_key=api_key)
+    openai.api_key = api_key
 
     # Check if chat history file exists, otherwise use gpt_config.txt
     history_file_to_use = history_file_location if os.path.exists(history_file_location) else 'gpt_config.json'
+    print(f"Using history file: {history_file_to_use}")  # Add this line for debugging
 
     try:
         # Read chat history
         with open(history_file_to_use, 'r') as file:
             history = json.load(file)
             history = convert_to_chat_history(history)  # Convert to required format
+    except FileNotFoundError:
+        print(f"Error: Chat history file {history_file_to_use} not found.")
+        return
     except IOError:
         print(f"Error: Failed to read the chat history from {history_file_to_use}.")
         return
@@ -333,22 +336,24 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
         return
 
     try:
-        # Call OpenAI API
-        completion = client.chat.completions.create(
+        # Call OpenAI API for chat completions
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=history
         )
 
         # Extract GPT response
-        gpt_response = completion.choices[0].message
-    except OpenAIError as e:
+        gpt_response = response.choices[0].message
+    except Exception as e:
         print(f"Error: OpenAI API call failed - {e}")
         return
 
     try:
         # Save GPT response
-        with open(gpt_output_location or default_gpt_output, 'w') as file:
-            file.write(gpt_response)
+        print(type(gpt_response))
+        print(gpt_response)
+        with open(gpt_output_location, 'w') as file:
+            file.write(gpt_response["content"])
         print("GPT response saved successfully.")
     except IOError:
         print("Error: Failed to write the GPT response to file.")
@@ -356,10 +361,12 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
 
     try:
         # Update chat history
-        history.append({"role": "assistant", "content": gpt_response})
+        # Update chat history
+        history.append({"role": "assistant", "content": gpt_response["content"]})
+
 
         # Save new chat history
-        with open(new_history_location or default_new_history, 'w') as file:
+        with open(new_history_location, 'w') as file:
             json.dump(history, file)
         print("Chat history updated successfully.")
     except IOError:
@@ -369,6 +376,92 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
 
 # # Example usage
 # call_openai_api('path/to/chat_history.json', 'gpt_output.txt', 'chat_history.txt')
+
+
+
+
+# #GPT Function (not working)
+# def convert_to_chat_history(history):
+#     """
+#     Convert the chat history to the required format if necessary.
+#     """
+#     if not isinstance(history, list):
+#         raise TypeError("Chat history must be a list.")
+#     for msg in history:
+#         if not isinstance(msg, dict) or "role" not in msg or "content" not in msg:
+#             raise ValueError("Each message in the chat history must be a dictionary with 'role' and 'content' keys.")
+#     return history
+
+
+# def call_openai_api(history_file_location = os.getcwd(), gpt_output_location = 'gpt_output.txt', new_history_location = 'chat_history.json', 
+#                     api_key_file='openai_api.key'):
+
+#     try:
+#         # Read API key
+#         with open(api_key_file, 'r') as file:
+#             api_key = file.read().strip()
+#     except IOError:
+#         print("Error: Failed to read the API key file.")
+#         return
+
+#     # Initialize OpenAI client
+#     client = OpenAI(api_key=api_key)
+
+#     # Check if chat history file exists, otherwise use gpt_config.txt
+#     history_file_to_use = history_file_location if os.path.exists(history_file_location) else 'gpt_config.json'
+
+#     try:
+#         # Read chat history
+#         with open(history_file_to_use, 'r') as file:
+#             history = json.load(file)
+#             history = convert_to_chat_history(history)  # Convert to required format
+#     except IOError:
+#         print(f"Error: Failed to read the chat history from {history_file_to_use}.")
+#         return
+#     except json.JSONDecodeError:
+#         print(f"Error: Chat history file {history_file_to_use} is not a valid JSON.")
+#         return
+#     except (TypeError, ValueError) as e:
+#         print(f"Error: Invalid chat history format - {e}")
+#         return
+
+#     try:
+#         # Call OpenAI API
+#         completion = client.chat.completions.create(
+#             model="gpt-3.5-turbo",
+#             messages=history
+#         )
+
+#         # Extract GPT response
+#         gpt_response = completion.choices[0].message
+#     except OpenAIError as e:
+#         print(f"Error: OpenAI API call failed - {e}")
+#         return
+
+#     try:
+#         # Save GPT response
+#         with open(gpt_output_location or default_gpt_output, 'w') as file:
+#             file.write(gpt_response)
+#         print("GPT response saved successfully.")
+#     except IOError:
+#         print("Error: Failed to write the GPT response to file.")
+#         return
+
+#     try:
+#         # Update chat history
+#         history.append({"role": "assistant", "content": gpt_response})
+
+#         # Save new chat history
+#         with open(new_history_location or default_new_history, 'w') as file:
+#             json.dump(history, file)
+#         print("Chat history updated successfully.")
+#     except IOError:
+#         print("Error: Failed to update the chat history file.")
+#     except TypeError:
+#         print("Error: Problem with updating the chat history structure.")
+
+# # # Example usage
+# # call_openai_api('path/to/chat_history.json', 'gpt_output.txt', 'chat_history.txt')
 
 
 
@@ -383,6 +476,11 @@ def terminate_coach():
         # Move chat_history.json to the new folder
         shutil.move("chat_history.json", os.path.join(folder_name, "chat_history.json"))
         print("Moved chat_history.json to folder.")
+
+        # Create a new chat_history.json file with empty list
+        with open(os.path.join(folder_name, "chat_history.json"), "w") as file:
+            json.dump([], file)
+        print("Created new chat_history.json file.")
 
         # Delete voice_output.mp3 if exists
         if os.path.exists("voice_output.mp3"):
@@ -409,11 +507,12 @@ def terminate_coach():
     except Exception as e:
         print(f"Error: {e}")
 
-# # Call the function
+# # Example uasge:
 # terminate_coach()
 
 
-transcribe_audio_file('output.wav')
+
+# asyncio.run(transcribe_audio_file('output.wav'))
 
 # print('Coach initiated, calling gpt')
 # call_openai_api()
@@ -428,4 +527,4 @@ transcribe_audio_file('output.wav')
 # record_audio()
 
 # print('Transcribing your answer')
-# transcribe_audio_file()
+# asyncio.run(transcribe_audio_file())
