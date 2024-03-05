@@ -53,11 +53,11 @@ else:
 
 generate_and_save_image('image_prompts/'+image_prompt, folder_path)
 
-# Generate voiceover
-voice_prompt = generate_response(voiceover_config, campaign_info, 'voice_prompt')
-if voice_prompt:
-    print(f"Output file generated: {voice_prompt}")
-else:
-    print("Error generating output file.")
+# # Generate voiceover
+# voice_prompt = generate_response(voiceover_config, campaign_info, 'voice_prompt')
+# if voice_prompt:
+#     print(f"Output file generated: {voice_prompt}")
+# else:
+#     print("Error generating output file.")
 
-convert_text_to_speech('voice_prompt/'+voice_prompt, folder_path)
+# convert_text_to_speech('voice_prompt/'+voice_prompt, folder_path)

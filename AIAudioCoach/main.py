@@ -8,11 +8,10 @@ import threading
 import os
 import re
 import requests
-from playsound import playsound
-import playsound
-from openai import OpenAI, OpenAIError
+import openai
 import shutil
 from datetime import datetime
+from pydub import AudioSegment
 
 
 def read_file(file_path, mode='rb'):
@@ -26,7 +25,7 @@ def read_file(file_path, mode='rb'):
 
 
 # Transcription STT function
-async def transcribe_audio_file(audio_file_path, chat_history_path='chat_history.json', api_key_file='deepgram_api.key'):
+async def transcribe_audio_file(audio_file_path='user_answer.wav' , chat_history_path='chat_history.json', api_key_file='deepgram_api.key'):
     try:
         print(f"Reading API key from {api_key_file}...")
         with open(api_key_file, 'r') as file:
@@ -74,15 +73,13 @@ async def transcribe_audio_file(audio_file_path, chat_history_path='chat_history
     except Exception as e:
         print(f"An error occurred during transcription: {str(e)}")
 
-
-
 # # Example usage
 # asyncio.run(transcribe_audio_file('path/to/your/audio/file.wav', 'path/to/chat/history/file.json'))
 
 
 
 # Recording function
-def record_audio(save_path):
+def record_audio(save_path = os.getcwd()):
     try:
         # Define audio parameters
         audio_format = pyaudio.paInt16
@@ -167,7 +164,7 @@ def sanitize_filename(filename):
     """
     return re.sub(r'[^\w.-]', '', filename)
 
-def convert_text_to_speech(input_file, output_folder):
+def convert_text_to_speech(input_file='gpt_output.txt', output_folder = os.getcwd()):
     # Constants
     CHUNK_SIZE = 1024
     OUTPUT_FILENAME = "voice_output.mp3"
@@ -221,7 +218,19 @@ def convert_text_to_speech(input_file, output_folder):
 
 
 # Speaker function
-def play_audio(file_path):
+def convert_to_wav(file_path):
+    # Load audio file
+    sound = AudioSegment.from_file(file_path)
+
+    # Define output file path
+    output_path = os.path.splitext(file_path)[0] + ".wav"
+
+    # Export as WAV
+    sound.export(output_path, format="wav")
+
+    return output_path
+
+def play_audio(file_path='voice_output.mp3'):
     try:
         # Check if the file exists
         if not os.path.exists(file_path):
@@ -232,9 +241,36 @@ def play_audio(file_path):
             raise ValueError("The file is not a supported audio format (MP3 or WAV).")
 
         print(f"Attempting to play the audio file: {file_path}")
-        
-        # Play the audio file
-        playsound.playsound(file_path)
+
+        # Convert to WAV if necessary
+        if not file_path.lower().endswith('.wav'):
+            print("Converting to WAV...")
+            file_path = convert_to_wav(file_path)
+
+        # Open the audio file
+        wf = wave.open(file_path, 'rb')
+
+        # Instantiate PyAudio
+        p = pyaudio.PyAudio()
+
+        # Open PyAudio stream
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
+
+        # Read data
+        data = wf.readframes(1024)
+
+        # Play audio
+        while data:
+            stream.write(data)
+            data = wf.readframes(1024)
+
+        # Close stream and PyAudio
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
 
         print("Audio playback completed successfully.")
 
@@ -245,7 +281,7 @@ def play_audio(file_path):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-# # Example usage
+# Example usage
 # play_audio("path/to/your/audiofile.mp3")
 
 
@@ -331,8 +367,8 @@ def call_openai_api(history_file_location, gpt_output_location, new_history_loca
     except TypeError:
         print("Error: Problem with updating the chat history structure.")
 
-# Example usage
-call_openai_api('path/to/chat_history.json', 'gpt_output.txt', 'chat_history.txt')
+# # Example usage
+# call_openai_api('path/to/chat_history.json', 'gpt_output.txt', 'chat_history.txt')
 
 
 
@@ -373,5 +409,23 @@ def terminate_coach():
     except Exception as e:
         print(f"Error: {e}")
 
-# Call the function
-terminate_coach()
+# # Call the function
+# terminate_coach()
+
+
+transcribe_audio_file('output.wav')
+
+# print('Coach initiated, calling gpt')
+# call_openai_api()
+
+# print('Converting text to speech')
+# convert_text_to_speech()
+
+# print('Playing audio')
+# play_audio()
+
+# print('Recording your answer')
+# record_audio()
+
+# print('Transcribing your answer')
+# transcribe_audio_file()
