@@ -380,7 +380,7 @@ def call_openai_api(history_file_location='chat_history.json', gpt_output_locati
 
 
 
-# #GPT Function (not working)
+# #GPT Function (not working, outdated)
 # def convert_to_chat_history(history):
 #     """
 #     Convert the chat history to the required format if necessary.
@@ -510,7 +510,34 @@ def terminate_coach():
 # # Example uasge:
 # terminate_coach()
 
+print('Preparing session')
+terminate_coach()
 
+user_keyboard_input = ''
+
+while True:
+    print('Coach initiated, calling gpt')
+    call_openai_api()
+
+    print('Converting to speech')
+    convert_text_to_speech()
+
+    print('Playing audio')
+    play_audio()
+
+    print('Enter any value to continue or enter "x" to end program')
+    user_keyboard_input = input()
+    if user_keyboard_input == 'x':
+        break
+
+    print('Recording')
+    record_audio()
+
+    print('Transcribing your answer')
+    asyncio.run(transcribe_audio_file())
+
+print('Ending session')
+terminate_coach()
 
 # asyncio.run(transcribe_audio_file('output.wav'))
 
